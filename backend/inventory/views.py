@@ -1,22 +1,37 @@
-from rest_framework import viewsets, permissions
-from .models import Producto, Cliente, Venta
-from .serializers import ProductoSerializer, ClienteSerializer, VentaSerializer
+from rest_framework import viewsets, permissions, filters
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet, NumberFilter
+from .models import Product, Customer, Sale
+from .serializers import ProductSerializer, CustomerSerializer, SaleSerializer
+from rest_framework.permissions import BasePermission
 
-class ProductoViewSet(viewsets.ModelViewSet):
-    queryset = Producto.objects.all()
-    serializer_class = ProductoSerializer
-    permission_classes = [permissions.IsAdminUser]
+class IsSellerOrAdmin(BasePermission):
+    def has_permission(self, request, view):
+        return request.user and (request.user.rol == 'VENDEDOR' or request.user.rol == 'ADMIN')
 
-class ClienteViewSet(viewsets.ModelViewSet):
-    queryset = Cliente.objects.all()
-    serializer_class = ClienteSerializer
-    permission_classes = [permissions.IsAuthenticated]
+class ProductFilter(FilterSet):
+    stock__lt = NumberFilter(field_name='stock', lookup_expr='lt')
+    
+    class Meta:
+        model = Product
+        fields = ['stock']
 
-class VentaViewSet(viewsets.ModelViewSet):
-    queryset = Venta.objects.all()
-    serializer_class = VentaSerializer
-    permission_classes = [permissions.IsAuthenticated]  # Permite a cualquier usuario autenticado
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [IsSellerOrAdmin]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_class = ProductFilter
+    search_fields = ['name', 'code']
+
+class CustomerViewSet(viewsets.ModelViewSet):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
+    permission_classes = [IsSellerOrAdmin]
+
+class SaleViewSet(viewsets.ModelViewSet):
+    queryset = Sale.objects.all()
+    serializer_class = SaleSerializer
+    permission_classes = [IsSellerOrAdmin]
 
     def perform_create(self, serializer):
-        print("Usuario autenticado:", self.request.user)  # Verifica qué usuario está autenticado
-        serializer.save(vendedor=self.request.user)  # Asigna el usuario autenticado como vendedor
+        serializer.save(seller=self.request.user)

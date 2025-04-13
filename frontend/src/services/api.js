@@ -57,28 +57,28 @@ export const logout = () => {
 }
 
 // Funciones para manejar productos
-export const getProductos = async () => {
-  const response = await api.get('/productos/')
+export const getProducts = async () => {
+  const response = await api.get('/products/')
   return response.data
 }
 
-export const getProductoById = async (id) => {
-  const response = await api.get(`/productos/${id}/`)
+export const getProductById = async (id) => {
+  const response = await api.get(`/products/${id}/`)
   return response.data
 }
 
-export const createProducto = async (producto) => {
-  const response = await api.post('/productos/', producto)
+export const createProduct = async (product) => {
+  const response = await api.post('/products/', product)
   return response.data
 }
 
-export const updateProducto = async (id, producto) => {
-  const response = await api.put(`/productos/${id}/`, producto)
+export const updateProduct = async (id, product) => {
+  const response = await api.put(`/products/${id}/`, product)
   return response.data
 }
 
-export const deleteProducto = async (id) => {
-  await api.delete(`/productos/${id}/`)
+export const deleteProduct = async (id) => {
+  await api.delete(`/products/${id}/`)
 }
 
 export default api

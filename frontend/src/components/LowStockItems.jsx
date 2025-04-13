@@ -8,7 +8,7 @@ const LowStockItems = () => {
   useEffect(() => {
     const fetchLowStock = async () => {
       try {
-        const response = await api.get('/productos/?stock_lt=10')
+        const response = await api.get('/products/?stock__lt=10')
         setProducts(response.data)
       } catch (error) {
         console.error('Error fetching low stock:', error)
@@ -27,8 +27,8 @@ const LowStockItems = () => {
             className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-100"
           >
             <div>
-              <p className="font-medium">{product.nombre}</p>
-              <p className="text-sm text-gray-600">Código: {product.codigo || 'N/A'}</p>
+              <p className="font-medium">{product.name}</p>
+              <p className="text-sm text-gray-600">Código: {product.code || 'N/A'}</p>
             </div>
             <div className="flex items-center gap-3">
               <span className="text-red-600 font-medium">

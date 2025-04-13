@@ -1,0 +1,80 @@
+[
+    {
+        "model": "inventory.product",
+        "pk": 1,
+        "fields": {
+            "code": "LAP001",
+            "name": "HP Laptop 15.6\"",
+            "description": "HP Laptop with Intel Core i5 processor, 8GB RAM, 256GB SSD",
+            "price": "899.99",
+            "stock": 10,
+            "created_at": "2024-03-28T12:00:00Z"
+        }
+    },
+    {
+        "model": "inventory.product",
+        "pk": 2,
+        "fields": {
+            "code": "MON001",
+            "name": "Dell Monitor 24\"",
+            "description": "Dell Full HD Monitor 1920x1080, 60Hz",
+            "price": "199.99",
+            "stock": 15,
+            "created_at": "2024-03-28T12:00:00Z"
+        }
+    },
+    {
+        "model": "inventory.product",
+        "pk": 3,
+        "fields": {
+            "code": "KBD001",
+            "name": "RGB Mechanical Keyboard",
+            "description": "Mechanical keyboard with RGB backlight, blue switches",
+            "price": "79.99",
+            "stock": 20,
+            "created_at": "2024-03-28T12:00:00Z"
+        }
+    },
+    {
+        "model": "inventory.product",
+        "pk": 4,
+        "fields": {
+            "code": "MOU001",
+            "name": "Gaming Mouse",
+            "description": "Gaming mouse with 6 programmable buttons, 16000 DPI",
+            "price": "49.99",
+            "stock": 25,
+            "created_at": "2024-03-28T12:00:00Z"
+        }
+    },
+    {
+        "model": "inventory.customer",
+        "pk": 1,
+        "fields": {
+            "name": "John Smith",
+            "dni": "12345678",
+            "address": "123 Main Street",
+            "phone": "555-0101"
+        }
+    },
+    {
+        "model": "inventory.customer",
+        "pk": 2,
+        "fields": {
+            "name": "Mary Johnson",
+            "dni": "87654321",
+            "address": "456 Central Avenue",
+            "phone": "555-0202"
+        }
+    },
+    {
+        "model": "inventory.customer",
+        "pk": 3,
+        "fields": {
+            "name": "Robert Brown",
+            "dni": "11223344",
+            "address": "789 Main Square",
+            "phone": "555-0303"
+        }
+    }
+] 

@@ -1,73 +1,73 @@
 from rest_framework import serializers
-from .models import Producto, Cliente, Venta, DetalleVenta
+from .models import Product, Customer, Sale, SaleDetail
 from django.db import transaction
 
 # ✅ Serializer para productos
-class ProductoSerializer(serializers.ModelSerializer):
+class ProductSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Producto
+        model = Product
         fields = '__all__'
 
-# ✅ Serializer para clientes (mostramos solo ID y nombre)
-class ClienteSerializer(serializers.ModelSerializer):
+# ✅ Serializer para clientes
+class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Cliente
-        fields = ['id', 'nombre']
+        model = Customer
+        fields = ['id', 'name', 'dni', 'phone', 'address']
 
 # ✅ Serializer para detalles de la venta
-class DetalleVentaSerializer(serializers.ModelSerializer):
-    producto_info = ProductoSerializer(source='producto', read_only=True)  # ✅ Muestra info del producto
+class SaleDetailSerializer(serializers.ModelSerializer):
+    product_info = ProductSerializer(source='product', read_only=True)  # ✅ Muestra info del producto
 
     class Meta:
-        model = DetalleVenta
-        fields = ['id', 'producto', 'producto_info', 'cantidad', 'precio_unitario']
+        model = SaleDetail
+        fields = ['id', 'product', 'product_info', 'quantity', 'unit_price']
 
 # ✅ Serializer para ventas
-class VentaSerializer(serializers.ModelSerializer):
-    detalles = DetalleVentaSerializer(many=True, write_only=True)  # ✅ Solo para input, no output
-    detalles_info = DetalleVentaSerializer(source='detalleventa_set', many=True, read_only=True)  # ✅ Para mostrar detalles
-    cliente = serializers.PrimaryKeyRelatedField(queryset=Cliente.objects.all())  # ✅ Permite enviar ID del cliente
-    cliente_info = ClienteSerializer(source='cliente', read_only=True)  # ✅ Muestra info del cliente
+class SaleSerializer(serializers.ModelSerializer):
+    details = SaleDetailSerializer(many=True, write_only=True)  # ✅ Solo para input, no output
+    details_info = SaleDetailSerializer(source='saledetail_set', many=True, read_only=True)  # ✅ Para mostrar detalles
+    customer = serializers.PrimaryKeyRelatedField(queryset=Customer.objects.all())  # ✅ Permite enviar ID del cliente
+    customer_info = CustomerSerializer(source='customer', read_only=True)  # ✅ Muestra info del cliente
 
     class Meta:
-        model = Venta
-        fields = ['id', 'cliente', 'cliente_info', 'fecha', 'total', 'detalles', 'detalles_info']
+        model = Sale
+        fields = ['id', 'customer', 'customer_info', 'date', 'total', 'details', 'details_info']
 
     def create(self, validated_data):
         request = self.context.get('request')
 
         if not request or not request.user.is_authenticated:
-            raise serializers.ValidationError("Usuario no autenticado")
+            raise serializers.ValidationError("User not authenticated")
 
-        detalles_data = validated_data.pop('detalles')
+        details_data = validated_data.pop('details')
 
         with transaction.atomic():
-            venta = Venta.objects.create(**validated_data)
+            sale = Sale.objects.create(**validated_data)
             total = 0
 
-            for detalle_data in detalles_data:
-                producto = detalle_data['producto']
+            for detail_data in details_data:
+                product = detail_data['product']
                 
-                # Verificamos stock
-                if producto.stock < detalle_data['cantidad']:
+                # Check stock
+                if product.stock < detail_data['quantity']:
                     raise serializers.ValidationError(
-                        f"Stock insuficiente para {producto.nombre} (quedan {producto.stock} unidades)"
+                        f"Insufficient stock for {product.name} (available: {product.stock} units)"
                     )
 
-                # Creamos el detalle de la venta
-                DetalleVenta.objects.create(
-                    venta=venta,
-                    producto=producto,
-                    cantidad=detalle_data['cantidad'],
-                    precio_unitario=detalle_data['precio_unitario']
+                # Create sale detail
+                SaleDetail.objects.create(
+                    sale=sale,
+                    product=product,
+                    quantity=detail_data['quantity'],
+                    unit_price=detail_data['unit_price']
                 )
 
-                # Actualizamos stock y total
-                total += detalle_data['cantidad'] * float(detalle_data['precio_unitario'])
-                producto.stock -= detalle_data['cantidad']
-                producto.save()
+                # Update stock and total
+                total += detail_data['quantity'] * float(detail_data['unit_price'])
+                product.stock -= detail_data['quantity']
+                product.save()
 
-            venta.total = total
-            venta.save()
+            sale.total = total
+            sale.save()
 
-        return venta
+        return sale

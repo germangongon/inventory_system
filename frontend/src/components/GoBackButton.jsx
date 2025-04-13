@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 const BotonVolver = () => {
   const navigate = useNavigate();
@@ -6,9 +7,10 @@ const BotonVolver = () => {
   return (
     <button
       onClick={() => navigate(-1)}
-      className="px-4 py-2 bg-gray-600 text-white rounded-lg shadow-md hover:bg-gray-700 transition duration-200"
+      className="flex items-center gap-2 bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 px-3 py-1.5 rounded-md transition-all duration-200 text-sm font-medium mb-6"
     >
-      ⬅ Volver Atrás
+      <ArrowLeftIcon className="w-4 h-4" />
+      <span>Volver Atrás</span>
     </button>
   );
 };

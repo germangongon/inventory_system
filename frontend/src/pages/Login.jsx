@@ -1,17 +1,16 @@
 import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom' 
-import api from '../services/api'
 
 export default function Login() {
   const { login } = useAuth()
-  const navigate = useNavigate() // <- Hook de navegación
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     username: '',
     password: ''
   })
-  const [loading, setLoading] = useState(false) // <- Estado de carga
-  const [error, setError] = useState('') // <- Manejo de errores
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -19,10 +18,17 @@ export default function Login() {
     setError('')
     
     try {
+      if (!formData.username || !formData.password) {
+        throw new Error('Por favor ingrese usuario y contraseña')
+      }
+      
       await login(formData.username, formData.password)
-      navigate('/') // Redirige al dashboard
+      navigate('/')
     } catch (error) {
-      setError('Usuario o contraseña incorrectos')
+      const errorMessage = error.response?.data?.detail || 
+                         error.message || 
+                         'Error al iniciar sesión. Por favor intente nuevamente.'
+      setError(errorMessage)
       console.error('Login error:', error)
     } finally {
       setLoading(false)
@@ -47,6 +53,7 @@ export default function Login() {
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={formData.username}
             onChange={(e) => setFormData({...formData, username: e.target.value})}
+            disabled={loading}
           />
         </div>
         
@@ -57,6 +64,7 @@ export default function Login() {
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={formData.password}
             onChange={(e) => setFormData({...formData, password: e.target.value})}
+            disabled={loading}
           />
         </div>
         

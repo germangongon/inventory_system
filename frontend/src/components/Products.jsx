@@ -1,37 +1,44 @@
 import { useEffect, useState } from 'react'
-import { getProductos, deleteProducto } from '../services/api'
+import { getProducts, deleteProduct } from '../services/api'
 import { Link } from 'react-router-dom'
+import { PlusIcon } from '@heroicons/react/24/outline'
 
-
-const Productos = () => {
-  const [productos, setProductos] = useState([])
+const Products = () => {
+  const [products, setProducts] = useState([])
 
   useEffect(() => {
-    fetchProductos()
+    fetchProducts()
   }, [])
 
-  const fetchProductos = async () => {
+  const fetchProducts = async () => {
     try {
-      const data = await getProductos()
-      setProductos(data)
+      const data = await getProducts()
+      setProducts(data)
     } catch (error) {
-      console.error('Error cargando productos:', error)
+      console.error('Error loading products:', error)
     }
   }
 
   const handleDelete = async (id) => {
-    if (window.confirm('¿Estás seguro de eliminar este producto?')) {
-      await deleteProducto(id)
-      fetchProductos()
+    if (window.confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+      await deleteProduct(id)
+      fetchProducts()
     }
   }
 
   return (
     <div className="p-6 bg-white shadow rounded-xl">
-      <h2 className="text-xl font-semibold mb-4">Lista de Productos</h2>
-      <Link to="/productos/nuevo" className="bg-blue-500 text-white px-4 py-2 rounded">
-        + Agregar Producto
-      </Link>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-semibold">Lista de Productos</h2>
+        <Link 
+          to="/products/new" 
+          className="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-md transition-all duration-200"
+        >
+          <PlusIcon className="w-5 h-5" />
+          Agregar Producto
+        </Link>
+      </div>
+      
       <table className="w-full mt-4 border-collapse border border-gray-200">
         <thead>
           <tr className="bg-gray-100">
@@ -43,17 +50,17 @@ const Productos = () => {
           </tr>
         </thead>
         <tbody>
-          {productos.map((producto) => (
-            <tr key={producto.id} className="hover:bg-gray-50">
-              <td className="p-2 border">{producto.codigo}</td>
-              <td className="p-2 border">{producto.nombre}</td>
-              <td className="p-2 border">${producto.precio}</td>
-              <td className="p-2 border">{producto.stock}</td>
+          {products.map((product) => (
+            <tr key={product.id} className="hover:bg-gray-50">
+              <td className="p-2 border">{product.code}</td>
+              <td className="p-2 border">{product.name}</td>
+              <td className="p-2 border">${product.price}</td>
+              <td className="p-2 border">{product.stock}</td>
               <td className="p-2 border">
-                <Link to={`/productos/editar/${producto.id}`} className="text-blue-500 mr-2">
+                <Link to={`/products/edit/${product.id}`} className="text-blue-600 hover:text-blue-800 px-2 py-1 rounded-md transition-colors duration-200">
                   Editar
                 </Link>
-                <button onClick={() => handleDelete(producto.id)} className="text-red-500">
+                <button onClick={() => handleDelete(product.id)} className="text-red-600 hover:text-red-800 px-2 py-1 rounded-md transition-colors duration-200 ml-2">
                   Eliminar
                 </button>
               </td>
@@ -65,4 +72,4 @@ const Productos = () => {
   )
 }
 
-export default Productos
+export default Products
